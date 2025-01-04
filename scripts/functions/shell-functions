@@ -1,0 +1,28 @@
+# why create shell scripts when one can use functions?
+
+function usage-and-exit () {
+	echo "Usage: ${FUNCNAME[1]} $1"
+	kill -INT $$
+}
+
+
+function docker-shell () {
+
+    if [[ $# -lt 1 ]]; then
+        usage-and-exit "[-b|--bash]"
+    fi
+
+    local shell_cmd="/bin/sh"
+
+    case "$2" in
+        -b|-bash)
+            shell_cmd="/bin/bash"
+        ;;
+    esac
+	if [ "$shell_cmd" = "/bin/bash" ]; then
+    	docker run -it --rm --entrypoint $shell_cmd  "${@:3}" $1
+	else
+    	docker run -it --rm --entrypoint $shell_cmd  "${@:2}" $1
+	fi
+
+}
